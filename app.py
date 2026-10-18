@@ -18,12 +18,94 @@ with st.sidebar:
 
 st.subheader("1. Añade tus activos")
 st.write("Introduce un ticker por línea. Ejemplos de símbolos de Yahoo Finance: `NKE`, `MSTR`, `SPYL.DE`, `BTC-EUR`.")
-initial = """NKE,Acción
+
+initial = """# Índices
+^GSPC,Índice
+
+# Acciones
+AAPL,Acción
+ACX.MC,Acción
+ADBE,Acción
+ALV.DE,Acción
+AMZN,Acción
+ASML,Acción
+BA,Acción
+BBAR,Acción
+BKNG,Acción
+BP,Acción
+BRK-B,Acción
+CCJ,Acción
+COIN,Acción
+COST,Acción
+CP,Acción
+CRM,Acción
+CVX,Acción
+DD2.F,Acción
+DN3.F,Acción
+DUOL,Acción
+GME,Acción
+GOOG,Acción
+HOOD,Acción
+IDR.MC,Acción
+INTU,Acción
 IREN,Acción
+KO,Acción
+MA,Acción
+MARA,Acción
+META,Acción
+MCO,Acción
+MSCI,Acción
 MSTR,Acción
+MSFT,Acción
+MU,Acción
+NFLX,Acción
+NKE,Acción
+NVO,Acción
+NVDA,Acción
+ORCL,Acción
+PEP,Acción
+PLTR,Acción
+PYPL,Acción
+REP.MC,Acción
+SHEL,Acción
+SN,Acción
+SPCX,Acción
+SPGI,Acción
+TSLA,Acción
+TXRH,Acción
+UBER,Acción
+V,Acción
+VICI,Acción
+WMT,Acción
+
+# Fondos y ETF
 SPYL.DE,Fondo indexado
+XNAS.DE,Fondo indexado
+RSP,ETF
+PCOM,ETF materias primas
+SPHY,ETF bonos high yield
+SCYB,ETF bonos high yield
+
+# Criptomonedas
 BTC-EUR,Criptomoneda
-IB1T.DE,ETC"""
+BTC-USD,Criptomoneda
+LINK-EUR,Criptomoneda
+
+# ETP y ETC
+IB1T,ETP Bitcoin
+PPFB.DE,ETC oro
+XAD6.DE,ETC plata
+
+# Metales preciosos
+XAU-EUR,Metal precioso
+XAG-EUR,Metal precioso
+
+# Preferentes de Strategy
+STRC,Instrumento preferente
+STRK,Instrumento preferente
+STRF,Instrumento preferente
+"""
+
 tickers_text = st.text_area("Ticker,Tipo (opcional)", value=initial, height=145,
     help="Tipos sugeridos: Acción, ETF, ETC, Fondo indexado, Índice, Criptomoneda. Si no indicas tipo, se tratará como Acción.")
 st.caption("Edita o borra los ejemplos y añade tus propios símbolos. La lista no se guarda de forma permanente en este prototipo.")
@@ -100,12 +182,54 @@ if run:
             valid = [v for v in checked if v is not None]
             alert = any(v <= -threshold for v in valid) if valid else False
 
-            if alert:
-                signal = "🔴 ALERTA"
-            elif not valid:
-                signal = "🟡 Histórico insuficiente"
-            else:
-                signal = "🟢 Sin alerta"
+            
+if not valid:
+    signal = "⚪ Sin datos"
+    color = "gris"
+else:
+    # La desviación más negativa representa
+    # el precio más alejado por debajo de la media.
+    best_dev = min(valid)
+
+    
+if not valid:
+    signal = "⚪ Sin datos"
+    color = ""
+else:
+    best_dev = min(valid)
+    asset_type = typ.strip().lower()
+
+    if asset_type in ("índice", "indice", "índices", "indices"):
+        green_threshold = 10.0
+        yellow_threshold = 7.5
+    elif asset_type in (
+        "acción", "accion", "acciones",
+        "etf", "etc", "etp",
+        "fondo indexado",
+        "etf materias primas",
+        "etf bonos high yield",
+        "etp bitcoin"
+    ):
+        green_threshold = 20.0
+        yellow_threshold = 15.0
+    else:
+        green_threshold = None
+        yellow_threshold = None
+
+    if green_threshold is None:
+        signal = ""
+        color = ""
+    elif best_dev <= -green_threshold:
+        signal = "🟢 Comprar"
+        color = "verde"
+    elif best_dev <= -yellow_threshold:
+        signal = "🟡 Aproximación"
+        color = "amarillo"
+    else:
+        signal = ""
+        color = ""
+        
+        
 
             results.append({
                 "Ticker": ticker,
