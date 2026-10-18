@@ -182,72 +182,37 @@ if run:
             valid = [v for v in checked if v is not None]
             alert = any(v <= -threshold for v in valid) if valid else False
 
-            
-
-        if not valid:
-            signal = "⚪ Sin datos"
-            color = ""
-        else:
-            best_dev = min(valid)
-            asset_type = typ.strip().lower()
-
-            if any(x in asset_type for x in ["índice", "indice", "indices"]):
-                green_threshold = 10.0
-                yellow_threshold = 7.5
-            elif any(x in asset_type for x in [
-                "acción", "accion", "acciones", "etf", "etc", "etp"
-            ]):
-                green_threshold = 20.0
-                yellow_threshold = 15.0
-            else:
-                green_threshold = None
-                yellow_threshold = None
-
-            if green_threshold is None:
-                signal = ""
+         
+            if not valid:
+                signal = "⚪ Sin datos"
                 color = ""
-            elif best_dev <= -green_threshold:
-                signal = "🟢 Comprar"
-                color = "verde"
-            elif best_dev <= -yellow_threshold:
-                signal = "🟡 Aproximación"
-                color = "amarillo"
             else:
-                signal = ""
-                color = ""
-                
+                best_dev = min(valid)
+                asset_type = typ.strip().lower()
 
-    if asset_type in ("índice", "indice", "índices", "indices"):
-        green_threshold = 10.0
-        yellow_threshold = 7.5
-    elif asset_type in (
-        "acción", "accion", "acciones",
-        "etf", "etc", "etp",
-        "fondo indexado",
-        "etf materias primas",
-        "etf bonos high yield",
-        "etp bitcoin"
-    ):
-        green_threshold = 20.0
-        yellow_threshold = 15.0
-    else:
-        green_threshold = None
-        yellow_threshold = None
+                if any(x in asset_type for x in ["índice", "indice", "indices"]):
+                    green_threshold = 10.0
+                    yellow_threshold = 7.5
+                elif any(x in asset_type for x in ["acción", "accion", "acciones", "etf", "etc", "etp"]):
+                    green_threshold = 20.0
+                    yellow_threshold = 15.0
+                else:
+                    green_threshold = None
+                    yellow_threshold = None
 
-    if green_threshold is None:
-        signal = ""
-        color = ""
-    elif best_dev <= -green_threshold:
-        signal = "🟢 Comprar"
-        color = "verde"
-    elif best_dev <= -yellow_threshold:
-        signal = "🟡 Aproximación"
-        color = "amarillo"
-    else:
-        signal = ""
-        color = ""
-        
-        
+                if green_threshold is None:
+                    signal = ""
+                    color = ""
+                elif best_dev <= -green_threshold:
+                    signal = "🟢 Comprar"
+                    color = "verde"
+                elif best_dev <= -yellow_threshold:
+                    signal = "🟡 Aproximación"
+                    color = "amarillo"
+                else:
+                    signal = ""
+                    color = ""
+                    
 
             results.append({
                 "Ticker": ticker,
