@@ -3,7 +3,7 @@ import pandas as pd
 import yfinance as yf
 from datetime import date
 
-st.set_page_config(page_title="Asset Monitor", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Asset Monitor", page_icon="logo.png", layout="wide")
 st.title("📈 Asset Monitor")
 st.caption("Prototipo de seguimiento técnico · Media móvil de 200 sesiones y media móvil de 52 semanas")
 
